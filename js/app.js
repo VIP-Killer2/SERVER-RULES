@@ -1,1 +1,107 @@
-(()=>{const $=s=>document.querySelector(s);let lang=localStorage.getItem('bukovel-lang')||'uk',section='rules',cat=null,q='';const dict=()=>BUKOVEL_I18N[lang],data=()=>section==='rules'?BUKOVEL_RULES:BUKOVEL_CRIMINAL,txt=v=>typeof v==='string'?v:(v?.[lang]||v?.uk||'');function paint(){document.documentElement.lang=lang;document.querySelectorAll('[data-i]').forEach(e=>e.innerHTML=dict()[e.dataset.i]);document.querySelectorAll('[data-ph]').forEach(e=>e.placeholder=dict()[e.dataset.ph]);document.querySelectorAll('[data-lang]').forEach(e=>e.classList.toggle('active',e.dataset.lang===lang));render()}function render(){let term=q.toLocaleLowerCase(lang),groups=data().map((g,i)=>({...g,i,articles:g.articles.filter(a=>!term||[a.number,txt(a.title),txt(a.rule),txt(a.punishment)].join(' ').toLocaleLowerCase(lang).includes(term))})).filter(g=>g.articles.length);let nav=$('#cats');nav.innerHTML='';groups.forEach(g=>{let b=document.createElement('button');b.className='cat'+(cat===g.i?' active':'');b.textContent=txt(g.title);b.onclick=()=>{cat=g.i;q='';$('#q').value='';render();document.querySelector('[data-group="'+g.i+'"]').scrollIntoView({behavior:'smooth'})};nav.append(b)});let list=$('#list');list.innerHTML='';let n=0;groups.forEach(g=>{if(cat!==null&&!term&&cat!==g.i)return;let h=document.createElement('h3');h.className='group';h.dataset.group=g.i;h.textContent=txt(g.title);list.append(h);g.articles.forEach(a=>{n++;let c=document.createElement('article');c.className='article';let h=document.createElement('h3');h.innerHTML='<span class="num"></span>';h.querySelector('.num').textContent=a.number;h.append(document.createTextNode(' '+txt(a.title)));let p=document.createElement('p');p.textContent=txt(a.rule);let pu=document.createElement('div');pu.className='punish';let strong=document.createElement('b');strong.textContent=dict().punish;pu.append(strong,document.createTextNode(txt(a.punishment)));c.append(h,p,pu);list.append(c)})});$('#empty').hidden=!!n;$('#list').hidden=!n;$('#heading').textContent=section==='rules'?dict().rules.replace('📘 ',''):dict().criminal.replace('⚖️ ','')}document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{lang=b.dataset.lang;localStorage.setItem('bukovel-lang',lang);cat=null;paint()});document.querySelectorAll('[data-section]').forEach(b=>b.onclick=()=>{section=b.dataset.section;cat=null;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));render()});$('#q').oninput=e=>{q=e.target.value;cat=null;render()};$('#clear').onclick=()=>{q='';cat=null;$('#q').value='';render()};$('#year').textContent=new Date().getFullYear();paint()})();
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const cards = $("#cards"), search = $("#search"), notice = $("#notice");
+  let lang = localStorage.getItem("lviv-rp-lang") || "uk";
+  let section = "criminal";
+
+  function currentData() {
+    return section === "criminal" ? window.CRIMINAL_DATA[lang] : window.LEGISLATION_DATA[lang];
+  }
+  function applyLanguage() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.dataset.i18n;
+      const value = window.LANG[lang][key];
+      if (value !== undefined) el.innerHTML = value;
+    });
+    document.querySelectorAll(".lang-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.lang === lang));
+    search.placeholder = window.LANG[lang].searchHint;
+    render();
+  }
+  function render() {
+    const t = window.LANG[lang];
+    $("#section-title").textContent = section === "criminal" ? t.criminalTitle : t.legislationTitle;
+    $("#section-description").textContent = section === "criminal" ? t.criminalDesc : t.legislationDesc;
+    notice.hidden = section !== "criminal";
+    notice.textContent = section === "criminal" ? t.criminalNotice : "";
+    const query = search.value.trim().toLocaleLowerCase(lang === "uk" ? "uk" : "ru");
+    const items = currentData().filter(item => [item.number,item.title,item.subtitle,item.text].join(" ").toLocaleLowerCase(lang === "uk" ? "uk" : "ru").includes(query));
+    cards.innerHTML = "";
+    items.forEach(item => {
+      const article = document.createElement("article");
+      article.className = "document-card";
+      const toggle = document.createElement("button");
+      toggle.className = "card-toggle";
+      toggle.type = "button";
+      toggle.setAttribute("aria-expanded","false");
+      const number = document.createElement("span");
+      number.className = "card-number";
+      number.textContent = item.number;
+      const copy = document.createElement("span");
+      copy.className = "card-copy";
+      const title = document.createElement("span");
+      title.className = "card-title";
+      title.textContent = item.title;
+      const subtitle = document.createElement("span");
+      subtitle.className = "card-subtitle";
+      subtitle.textContent = item.subtitle;
+      copy.append(title,subtitle);
+      const chevron = document.createElement("span");
+      chevron.className = "card-chevron";
+      chevron.textContent = "⌄";
+      toggle.append(number,copy,chevron);
+      const body = document.createElement("div");
+      body.className = "card-body";
+      const inner = document.createElement("div");
+      inner.className = "card-body-inner";
+      const text = document.createElement("div");
+      text.className = "card-text";
+      item.text.split("\n").forEach(line => {
+        const p = document.createElement("p");
+        p.textContent = line;
+        text.appendChild(p);
+      });
+      inner.appendChild(text); body.appendChild(inner);
+      toggle.addEventListener("click", () => {
+        const open = article.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", String(open));
+      });
+      article.append(toggle,body);
+      cards.appendChild(article);
+    });
+    $("#empty").hidden = items.length !== 0;
+  }
+  document.querySelectorAll(".lang-btn").forEach(btn => btn.addEventListener("click", () => {
+    lang = btn.dataset.lang;
+    localStorage.setItem("lviv-rp-lang",lang);
+    applyLanguage();
+  }));
+  document.querySelectorAll(".section-tab").forEach(btn => btn.addEventListener("click", () => {
+    section = btn.dataset.section;
+    document.querySelectorAll(".section-tab").forEach(tab => tab.classList.toggle("active",tab === btn));
+    search.value = "";
+    render();
+  }));
+  search.addEventListener("input",render);
+  document.addEventListener("keydown",e => {
+    if (e.key === "/" && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) {
+      e.preventDefault(); search.focus();
+    }
+    if (e.key === "Escape" && document.activeElement === search) {
+      search.value = ""; render(); search.blur();
+    }
+  });
+  $("#year").textContent = new Date().getFullYear();
+  const snow = $("#snow");
+  for (let i=0;i<34;i++) {
+    const flake = document.createElement("span");
+    flake.className = "snowflake";
+    flake.textContent = i%4===0 ? "✧" : "•";
+    flake.style.left = Math.random()*100+"%";
+    flake.style.animationDuration = (9+Math.random()*15)+"s";
+    flake.style.animationDelay = (-Math.random()*20)+"s";
+    flake.style.fontSize = (5+Math.random()*9)+"px";
+    snow.appendChild(flake);
+  }
+  applyLanguage();
+})();
