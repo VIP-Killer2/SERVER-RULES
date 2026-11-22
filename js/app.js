@@ -1,109 +1,109 @@
 (() => {
   "use strict";
 
-  const translations = window.SITE_TRANSLATIONS;
-  const state = { lang: localStorage.getItem("lviv-rp-language") || "uk", open: new Set() };
   const $ = (selector, root = document) => root.querySelector(selector);
+  const state = { open: new Set() };
+
+  function ukrainian(value) {
+    if (value && typeof value === "object") return value.uk || value.ua || "";
+    return value ?? "";
+  }
 
   function flatten(groups) {
     if (!Array.isArray(groups)) return [];
     return groups.flatMap(group => (group.articles || []).map(article => ({
-      ...article,
-      groupTitle: group.title || ""
+      number: article.number,
+      title: ukrainian(article.title),
+      rule: ukrainian(article.rule),
+      punishment: ukrainian(article.punishment),
+      groupTitle: ukrainian(group.title)
     })));
   }
 
-  const legislation = flatten(window.BUKOVEL_RULES);
-  const criminal = flatten(window.BUKOVEL_CRIMINAL);
-
-  function text(key) { return translations[state.lang][key] || translations.uk[key] || key; }
-
-  function applyLanguage() {
-    document.documentElement.lang = state.lang;
-    document.title = state.lang === "ru" ? "ЛЬВІВ РП — Законодательство" : "ЛЬВІВ РП — Законодавство";
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.dataset.i18n;
-      if (translations[state.lang][key]) el.textContent = text(key);
-    });
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-      el.placeholder = text(el.dataset.i18nPlaceholder);
-    });
-    $("#languageToggle").innerHTML = (state.lang === "uk" ? "RU" : "UA") + " <span>↗</span>";
-    renderAll();
-  }
-
-  function normalize(value) {
-    return String(value ?? "").toLocaleLowerCase(state.lang === "ru" ? "ru" : "uk").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  }
-
-  function cardMarkup(article, sectionKey) {
-    const id = `${sectionKey}-${article.number}`;
-    const isOpen = state.open.has(id);
-    const group = article.groupTitle;
-    const groupDisplay = state.lang === "ru" ? group.replace("Загальні положення","Общие положения").replace("Повага та спілкування","Уважение и общение").replace("Правила RP-поведінки","Правила RP-поведения") : group;
-    return `
-      <article class="article-card ${isOpen ? "expanded" : ""}" data-article="${id}">
-        <button class="article-toggle" type="button" aria-expanded="${isOpen}" aria-controls="${id}-body">
-          <span class="article-number">${escapeHtml(article.number)}</span>
-          <span class="article-heading"><strong>${escapeHtml(article.title)}</strong><small>${escapeHtml(groupDisplay)}</small></span>
-          <span class="toggle-icon">${isOpen ? "−" : "+"}</span>
-        </button>
-        <div class="article-body" id="${id}-body" ${isOpen ? "" : "hidden"}>
-          <div class="detail-label">${text("rule")}</div>
-          <p>${escapeHtml(article.rule)}</p>
-          <div class="punishment-box"><span class="detail-label">${text("punishment")}</span><p>${escapeHtml(article.punishment)}</p></div>
-        </div>
-      </article>`;
-  }
+  const datasets = {
+    legislation: flatten(window.BUKOVEL_RULES),
+    criminal: flatten(window.BUKOVEL_CRIMINAL)
+  };
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, ch => ({
-      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     }[ch]));
   }
 
-  function renderSection(sectionKey, data, query) {
+  function normalize(value) {
+    return String(value ?? "").toLocaleLowerCase("uk").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function renderSection(sectionKey) {
+    const data = datasets[sectionKey] || [];
     const list = $(`#${sectionKey}List`);
     const empty = $(`#${sectionKey}Empty`);
     const count = $(`#${sectionKey}Count`);
-    const q = normalize(query);
+    const query = normalize($(`#${sectionKey}Search`).value);
     const filtered = data.filter(article => normalize([
       article.number, article.title, article.groupTitle, article.rule, article.punishment
-    ].join(" ")).includes(q));
+    ].join(" ")).includes(query));
 
     const groups = [];
     for (const article of filtered) {
       let group = groups.find(item => item.title === article.groupTitle);
-      if (!group) { group = { title: article.groupTitle, items: [] }; groups.push(group); }
+      if (!group) {
+        group = { title: article.groupTitle, items: [] };
+        groups.push(group);
+      }
       group.items.push(article);
     }
 
     list.innerHTML = groups.map(group => `
       <div class="chapter-block">
         <div class="chapter-heading"><span></span><h3>${escapeHtml(group.title)}</h3><small>${group.items.length}</small></div>
-        <div class="article-grid">${group.items.map(article => cardMarkup(article, sectionKey)).join("")}</div>
+        <div class="article-grid">${group.items.map(article => {
+          const id = `${sectionKey}-${article.number}`;
+          const isOpen = state.open.has(id);
+          return `
+            <article class="article-card ${isOpen ? "expanded" : ""}" data-article="${escapeHtml(id)}">
+              <button class="article-toggle" type="button" aria-expanded="${isOpen}" aria-controls="${escapeHtml(id)}-body">
+                <span class="article-number">${escapeHtml(article.number)}</span>
+                <span class="article-heading"><strong>${escapeHtml(article.title)}</strong><small>${escapeHtml(group.title)}</small></span>
+                <span class="toggle-icon" aria-hidden="true">${isOpen ? "−" : "+"}</span>
+              </button>
+              <div class="article-body" id="${escapeHtml(id)}-body" ${isOpen ? "" : "hidden"}>
+                <div class="detail-label">ЗМІСТ СТАТТІ</div>
+                <p>${escapeHtml(article.rule)}</p>
+                <div class="punishment-box"><span class="detail-label">ПОКАРАННЯ</span><p>${escapeHtml(article.punishment)}</p></div>
+              </div>
+            </article>`;
+        }).join("")}</div>
       </div>`).join("");
 
-    count.textContent = `${filtered.length} ${text("articles")}`;
+    count.textContent = `${filtered.length} ${articleWord(filtered.length)}`;
     empty.hidden = filtered.length !== 0;
     list.hidden = filtered.length === 0;
   }
 
+  function articleWord(number) {
+    const lastTwo = number % 100;
+    const last = number % 10;
+    if (lastTwo >= 11 && lastTwo <= 14) return "статей";
+    if (last === 1) return "стаття";
+    if (last >= 2 && last <= 4) return "статті";
+    return "статей";
+  }
+
   function renderAll() {
-    renderSection("legislation", legislation, $("#legislationSearch").value);
-    renderSection("criminal", criminal, $("#criminalSearch").value);
+    renderSection("legislation");
+    renderSection("criminal");
   }
 
   document.addEventListener("click", event => {
     const toggle = event.target.closest(".article-toggle");
     if (toggle) {
-      const article = toggle.closest("[data-article]");
-      const id = article.dataset.article;
-      state.open.has(id) ? state.open.delete(id) : state.open.add(id);
-      const sectionKey = id.split("-")[0];
-      const data = sectionKey === "criminal" ? criminal : legislation;
-      const search = $(`#${sectionKey}Search`).value;
-      renderSection(sectionKey, data, search);
+      const card = toggle.closest("[data-article]");
+      const id = card.dataset.article;
+      if (state.open.has(id)) state.open.delete(id);
+      else state.open.add(id);
+      renderSection(id.startsWith("criminal-") ? "criminal" : "legislation");
       return;
     }
 
@@ -111,37 +111,30 @@
     if (nav) {
       document.querySelectorAll(".nav-card").forEach(item => item.classList.toggle("active", item === nav));
       document.querySelectorAll(".content-section").forEach(item => item.classList.toggle("active", item.id === nav.dataset.target));
-      window.scrollTo({ top: document.querySelector(".section-nav").offsetTop - 12, behavior: "smooth" });
+      window.scrollTo({ top: $(".section-nav").offsetTop - 12, behavior: "smooth" });
     }
   });
 
-  $("#languageToggle").addEventListener("click", () => {
-    state.lang = state.lang === "uk" ? "ru" : "uk";
-    localStorage.setItem("lviv-rp-language", state.lang);
-    applyLanguage();
-  });
-  $("#legislationSearch").addEventListener("input", renderAll);
-  $("#criminalSearch").addEventListener("input", renderAll);
+  $("#legislationSearch").addEventListener("input", () => renderSection("legislation"));
+  $("#criminalSearch").addEventListener("input", () => renderSection("criminal"));
   $("#year").textContent = new Date().getFullYear();
 
-  // Subtle snowfall: limited number of flakes and disabled for reduced-motion users.
-  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (window.matchMedia && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const layer = $(".snow-layer");
     for (let i = 0; i < 34; i++) {
       const flake = document.createElement("i");
       flake.className = "snowflake";
       flake.style.left = `${Math.random() * 100}%`;
-      flake.style.animationDuration = `${9 + Math.random() * 15}s`;
-      flake.style.animationDelay = `${-Math.random() * 20}s`;
-      flake.style.opacity = `${0.2 + Math.random() * 0.55}`;
-      flake.style.setProperty("--drift", `${-35 + Math.random() * 70}px`);
-      flake.style.width = flake.style.height = `${2 + Math.random() * 4}px`;
-      layer.appendChild(flake);
+      flake.style.animationDuration = `${9 + Math.random() * 13}s`;
+      flake.style.animationDelay = `${-Math.random() * 18}s`;
+      flake.style.opacity = `${0.25 + Math.random() * 0.65}`;
+      const size = 2 + Math.random() * 3;
+      flake.style.width = `${size}px`;
+      flake.style.height = `${size}px`;
+      flake.style.setProperty("--drift", `${Math.round(Math.random() * 70 - 35)}px`);
+      layer.append(flake);
     }
   }
 
-  // Friendly diagnostic: empty data is visible in console rather than silently failing.
-  if (!legislation.length) console.error("Не завантажено BUKOVEL_RULES: перевірте js/legislation.js");
-  if (!criminal.length) console.error("Не завантажено BUKOVEL_CRIMINAL: перевірте js/criminal.js");
-  applyLanguage();
+  renderAll();
 })();
