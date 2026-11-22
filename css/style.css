@@ -114,3 +114,20 @@ h1 span { color: var(--gold); }
 @media (prefers-reduced-motion: reduce) {
   *, *:before, *:after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+
+/* Додаткові адаптивні виправлення */
+.uk-only { color: #9bb4bd; font-size: 9px; font-weight: 800; letter-spacing: .16em; }
+.article-toggle:focus-visible, .nav-card:focus-visible, .search-wrap input:focus-visible {
+  outline: 2px solid #9bd3e0;
+  outline-offset: 3px;
+}
+.article-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.article-card { min-width: 0; }
+.article-heading strong, .article-heading small { overflow-wrap: anywhere; }
+@media (max-width: 900px) {
+  .article-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .article-grid { grid-template-columns: 1fr; }
+}
