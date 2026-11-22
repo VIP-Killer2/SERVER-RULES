@@ -1,1 +1,65 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>БУКОВЕЛЬ РП — Правила</title><link rel="stylesheet" href="css/style.css"></head><body><div class="winter"><div class="aurora"></div><div class="snow"></div><div class="trees">🎄　☃️　🎄</div><div class="sleigh">🛷 🎅</div></div><header><b class="logo">БР</b><strong>БУКОВЕЛЬ РП</strong><div><button data-lang="uk">UA</button><button data-lang="ru">RU</button></div></header><main><section class="hero"><small data-i="eyebrow">ОФІЦІЙНИЙ ІНФОРМАЦІЙНИЙ ПОРТАЛ</small><h1 data-i="title">Правила <em>Буковель РП</em></h1><p data-i="intro">Ознайомся з правилами сервера, щоб гра була чесною та комфортною для кожного.</p></section><nav><button class="tab active" data-section="rules" data-i="rules">📘 Правила сервера</button><button class="tab" data-section="criminal" data-i="criminal">⚖️ Кримінальний кодекс</button></nav><div class="search"><input id="q" placeholder="Пошук за номером або текстом..." data-ph="search"><button id="clear" data-i="clear">Очистити</button></div><div class="layout"><aside><small data-i="categories">КАТЕГОРІЇ</small><div id="cats"></div></aside><section class="panel"><h2 id="heading"></h2><div id="list"></div><div id="empty" hidden>❄️ <span data-i="empty">Нічого не знайдено</span></div></section></div><footer>© <span id="year"></span> БУКОВЕЛЬ РП <span data-i="footer">Грай чесно. Поважай інших.</span></footer></main><script src="js/translations.js"></script><script src="js/rules.js"></script><script src="js/criminal.js"></script><script src="js/app.js"></script></body></html>
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101820">
+  <meta name="description" content="Законодавство та кримінальний кодекс сервера ЛЬВІВ РП">
+  <title>ЛЬВІВ РП — Законодавство</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="snow-layer" aria-hidden="true"></div>
+  <div class="top-lights" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <header class="hero">
+    <div class="hero-top">
+      <div class="brand-mark">LRP</div>
+      <button class="language-button" id="languageToggle" type="button" aria-label="Змінити мову">RU <span>↗</span></button>
+    </div>
+    <div class="hero-content">
+      <div class="eyebrow" data-i18n="eyebrow">ОФІЦІЙНИЙ ПОРТАЛ ЗАКОНОДАВСТВА</div>
+      <h1>ЛЬВІВ <span>РП</span></h1>
+      <p data-i18n="heroText">Єдиний довідник законодавства та кодексів сервера</p>
+      <div class="winter-line"><span>✦</span><i></i><span>❄</span><i></i><span>✦</span></div>
+    </div>
+    <div class="hero-bottom"><span data-i18n="winter">ЗИМОВИЙ СЕЗОН</span><span>•</span><span>ROLEPLAY</span></div>
+  </header>
+
+  <main class="page-shell">
+    <nav class="section-nav" aria-label="Розділи">
+      <button class="nav-card active" data-target="legislation" type="button">
+        <span class="nav-icon">⚖</span><span><b data-i18n="legislationTitle">Законодавство сервера RP</b><small data-i18n="legislationSub">Основні правила та положення</small></span><span class="nav-arrow">↗</span>
+      </button>
+      <button class="nav-card" data-target="criminal" type="button">
+        <span class="nav-icon">§</span><span><b data-i18n="criminalTitle">Кримінальний кодекс</b><small data-i18n="criminalSub">Кодекси та відповідальність</small></span><span class="nav-arrow">↗</span>
+      </button>
+    </nav>
+
+    <section class="content-section active" id="legislation">
+      <div class="section-heading">
+        <div><div class="eyebrow" data-i18n="directory">ДОВІДНИК</div><h2 data-i18n="legislationTitle">Законодавство сервера RP</h2><p data-i18n="legislationDesc">Оберіть статтю, щоб переглянути її зміст і передбачене покарання.</p></div>
+        <div class="section-count" id="legislationCount">—</div>
+      </div>
+      <label class="search-wrap"><span>⌕</span><input id="legislationSearch" type="search" autocomplete="off" data-i18n-placeholder="searchLegislation" placeholder="Пошук у законодавстві..."><kbd>⌕</kbd></label>
+      <div id="legislationList" class="article-groups"></div>
+      <div class="empty-state" id="legislationEmpty" hidden data-i18n="empty">Нічого не знайдено. Спробуйте інший запит.</div>
+    </section>
+
+    <section class="content-section" id="criminal">
+      <div class="section-heading">
+        <div><div class="eyebrow" data-i18n="directory">ДОВІДНИК</div><h2 data-i18n="criminalTitle">Кримінальний кодекс</h2><p data-i18n="criminalDesc">Статті кримінального кодексу та відповідальність за порушення.</p></div>
+        <div class="section-count" id="criminalCount">—</div>
+      </div>
+      <label class="search-wrap"><span>⌕</span><input id="criminalSearch" type="search" autocomplete="off" data-i18n-placeholder="searchCriminal" placeholder="Пошук у кримінальному кодексі..."><kbd>⌕</kbd></label>
+      <div id="criminalList" class="article-groups"></div>
+      <div class="empty-state" id="criminalEmpty" hidden data-i18n="empty">Нічого не знайдено. Спробуйте інший запит.</div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="footer-brand">ЛЬВІВ РП</div><p data-i18n="footerText">Офіційний інформаційний портал сервера</p><small>© <span id="year"></span> LVIV RP</small></footer>
+  <script src="js/translations.js"></script>
+  <script src="js/legislation.js"></script>
+  <script src="js/criminal.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
