@@ -11,54 +11,51 @@
 <body>
   <div class="snow-layer" aria-hidden="true"></div>
   <div class="top-lights" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
   <header class="hero">
-    <div class="hero-top">
-      <div class="brand-mark">LRP</div>
-      <button class="language-button" id="languageToggle" type="button" aria-label="Змінити мову">RU <span>↗</span></button>
-    </div>
+    <div class="hero-top"><div class="brand-mark">LRP</div><span class="uk-only">УКРАЇНСЬКА ВЕРСІЯ</span></div>
     <div class="hero-content">
-      <div class="eyebrow" data-i18n="eyebrow">ОФІЦІЙНИЙ ПОРТАЛ ЗАКОНОДАВСТВА</div>
+      <div class="eyebrow">ОФІЦІЙНИЙ ПОРТАЛ ЗАКОНОДАВСТВА</div>
       <h1>ЛЬВІВ <span>РП</span></h1>
-      <p data-i18n="heroText">Єдиний довідник законодавства та кодексів сервера</p>
+      <p>Єдиний довідник законодавства та кодексів сервера</p>
       <div class="winter-line"><span>✦</span><i></i><span>❄</span><i></i><span>✦</span></div>
     </div>
-    <div class="hero-bottom"><span data-i18n="winter">ЗИМОВИЙ СЕЗОН</span><span>•</span><span>ROLEPLAY</span></div>
+    <div class="hero-bottom"><span>ЗИМОВЕ ОФОРМЛЕННЯ</span><span>•</span><span>ROLEPLAY</span></div>
   </header>
 
   <main class="page-shell">
     <nav class="section-nav" aria-label="Розділи">
       <button class="nav-card active" data-target="legislation" type="button">
-        <span class="nav-icon">⚖</span><span><b data-i18n="legislationTitle">Законодавство сервера RP</b><small data-i18n="legislationSub">Основні правила та положення</small></span><span class="nav-arrow">↗</span>
+        <span class="nav-icon">⚖</span><span><b>Законодавство сервера RP</b><small>Основні положення та статті</small></span><span class="nav-arrow">↗</span>
       </button>
       <button class="nav-card" data-target="criminal" type="button">
-        <span class="nav-icon">§</span><span><b data-i18n="criminalTitle">Кримінальний кодекс</b><small data-i18n="criminalSub">Кодекси та відповідальність</small></span><span class="nav-arrow">↗</span>
+        <span class="nav-icon">§</span><span><b>Кримінальний кодекс</b><small>Кодекси та відповідальність</small></span><span class="nav-arrow">↗</span>
       </button>
     </nav>
 
     <section class="content-section active" id="legislation">
       <div class="section-heading">
-        <div><div class="eyebrow" data-i18n="directory">ДОВІДНИК</div><h2 data-i18n="legislationTitle">Законодавство сервера RP</h2><p data-i18n="legislationDesc">Оберіть статтю, щоб переглянути її зміст і передбачене покарання.</p></div>
+        <div><div class="eyebrow">ДОВІДНИК</div><h2>Законодавство сервера RP</h2><p>Натисніть на картку, щоб відкрити текст статті та покарання.</p></div>
         <div class="section-count" id="legislationCount">—</div>
       </div>
-      <label class="search-wrap"><span>⌕</span><input id="legislationSearch" type="search" autocomplete="off" data-i18n-placeholder="searchLegislation" placeholder="Пошук у законодавстві..."><kbd>⌕</kbd></label>
+      <label class="search-wrap"><span>⌕</span><input id="legislationSearch" type="search" autocomplete="off" placeholder="Пошук у законодавстві..."><kbd>⌕</kbd></label>
       <div id="legislationList" class="article-groups"></div>
-      <div class="empty-state" id="legislationEmpty" hidden data-i18n="empty">Нічого не знайдено. Спробуйте інший запит.</div>
+      <div class="empty-state" id="legislationEmpty" hidden>Нічого не знайдено. Спробуйте інший запит.</div>
     </section>
 
     <section class="content-section" id="criminal">
       <div class="section-heading">
-        <div><div class="eyebrow" data-i18n="directory">ДОВІДНИК</div><h2 data-i18n="criminalTitle">Кримінальний кодекс</h2><p data-i18n="criminalDesc">Статті кримінального кодексу та відповідальність за порушення.</p></div>
+        <div><div class="eyebrow">ДОВІДНИК</div><h2>Кримінальний кодекс</h2><p>Статті кримінального кодексу та відповідальність за порушення.</p></div>
         <div class="section-count" id="criminalCount">—</div>
       </div>
-      <label class="search-wrap"><span>⌕</span><input id="criminalSearch" type="search" autocomplete="off" data-i18n-placeholder="searchCriminal" placeholder="Пошук у кримінальному кодексі..."><kbd>⌕</kbd></label>
+      <label class="search-wrap"><span>⌕</span><input id="criminalSearch" type="search" autocomplete="off" placeholder="Пошук у кримінальному кодексі..."><kbd>⌕</kbd></label>
       <div id="criminalList" class="article-groups"></div>
-      <div class="empty-state" id="criminalEmpty" hidden data-i18n="empty">Нічого не знайдено. Спробуйте інший запит.</div>
+      <div class="empty-state" id="criminalEmpty" hidden>Нічого не знайдено. Спробуйте інший запит.</div>
     </section>
   </main>
 
-  <footer class="footer"><div class="footer-brand">ЛЬВІВ РП</div><p data-i18n="footerText">Офіційний інформаційний портал сервера</p><small>© <span id="year"></span> LVIV RP</small></footer>
-  <script src="js/translations.js"></script>
-  <script src="js/legislation.js"></script>
+  <footer class="footer"><div class="footer-brand">ЛЬВІВ РП</div><p>Офіційний інформаційний портал сервера</p><small>© <span id="year"></span> LVIV RP</small></footer>
+  <script src="js/rules.js"></script>
   <script src="js/criminal.js"></script>
   <script src="js/app.js"></script>
 </body>
